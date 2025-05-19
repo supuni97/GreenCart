@@ -9,7 +9,7 @@ const AllProducts = () => {
     if (searchQuery.length > 0) {
       setFilteredProducts(
         products.filter((product) =>
-          product.name.toLowercase().includes(searchQuery.toLowercase)
+          product.name.toLowerCase().includes(searchQuery.toLowerCase())
         )
       );
     } else {
