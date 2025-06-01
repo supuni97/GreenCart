@@ -89,3 +89,57 @@ export const login = async (req, res) => {
     res.json({ success: false, message: error.message });
   }
 };
+
+// check auth : /api/user/is-auth
+// export const isAuth = async (req, res) => {
+//   try {
+//     const { token } = req.cookies;
+
+//     if (!token) {
+//       return res.json({ success: false, message: "No token provided" });
+//     }
+
+//     const decoded = jwt.verify(token, process.env.JWT_SECRET);
+
+//     const user = await User.findById(decoded.id).select("-password");
+
+//     if (!user) {
+//       return res.json({ success: false, message: "User not found" });
+//     }
+
+//     return res.json({ success: true, user });
+//   } catch (error) {
+//     console.log(error.message);
+//     return res.json({ success: false, message: "Token verification failed" });
+//   }
+// };
+export const isAuth = async (req, res) => {
+  try {
+    const user = await User.findById(req.user.id).select("-password");
+
+    if (!user) {
+      return res
+        .status(404)
+        .json({ success: false, message: "User not found" });
+    }
+
+    return res.json({ success: true, user });
+  } catch (error) {
+    res.status(500).json({ success: false, message: error.message });
+  }
+};
+
+//logout user : /api/user/logout
+export const logout = async (req, res) => {
+  try {
+    res.clearCookie("token", {
+      httpOnly: true,
+      secure: process.env.NODE_ENV === "production",
+      sameSite: process.env.NODE_ENV === "production" ? "none" : "strict",
+    });
+    return res.json({ success: true, message: "Logged out" });
+  } catch (error) {
+    console.log(error.massage);
+    res.json({ success: false, message: error.message });
+  }
+};
